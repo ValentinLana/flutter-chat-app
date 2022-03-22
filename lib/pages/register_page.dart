@@ -3,7 +3,10 @@
 import 'package:chat_app/widgets/boton_azul.dart';
 import 'package:chat_app/widgets/custom_input.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../helpers/mostrar_alerta.dart';
+import '../services/auth_service.dart';
 import '../widgets/labels.dart';
 import '../widgets/logo.dart';
 
@@ -23,9 +26,15 @@ class RegisterPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Logo(title: 'Register',),
+                const Logo(
+                  title: 'Register',
+                ),
                 _Form(),
-                const Labels(ruta: 'login', text: '¿Ya tienes cuenta?', textBlue: 'Ingresa',),
+                const Labels(
+                  ruta: 'login',
+                  text: '¿Ya tienes cuenta?',
+                  textBlue: 'Ingresa',
+                ),
                 const Text(
                   'Términos y condiciones de uso',
                   style: TextStyle(fontWeight: FontWeight.w200),
@@ -53,6 +62,8 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -73,9 +84,23 @@ class __FormState extends State<_Form> {
             textController: passCtrl,
             isPassword: true,
           ),
-          BtnBlue(onPressed: (){
-            print(emailCtrl.text);
-          }, text: 'Ingrese')
+          BtnBlue(
+              onPressed: authService.autenticando
+                  ? null
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      final registroOk = await authService.register(
+                          nameCtrl.text.trim(),
+                          emailCtrl.text.trim(),
+                          passCtrl.text.trim());
+                      if (registroOk == true) {
+                        Navigator.pushReplacementNamed(context, 'usuarios');
+                      } else {
+                        mostrarAlerta(
+                            context, 'Registro incorrecto', registroOk);
+                      }
+                    },
+              text: 'Crear cuenta')
         ],
       ),
     );
