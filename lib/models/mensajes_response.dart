@@ -11,20 +11,20 @@ String mensajesResponseToJson(MensajesResponse data) => json.encode(data.toJson(
 class MensajesResponse {
     MensajesResponse({
         required this.ok,
-        required this.mensajes,
+         this.mensajes,
     });
 
     bool ok;
-    List<Mensaje> mensajes;
+    List<Mensaje>? mensajes;
 
     factory MensajesResponse.fromJson(Map<String, dynamic> json) => MensajesResponse(
         ok: json["ok"],
-        mensajes: List<Mensaje>.from(json["mensajes"].map((x) => Mensaje.fromJson(x))),
+        mensajes: json["mensajes"] != null ? List<Mensaje>.from(json["mensajes"].map((x) => Mensaje.fromJson(x))) : null,
     );
 
     Map<String, dynamic> toJson() => {
         "ok": ok,
-        "mensajes": List<dynamic>.from(mensajes.map((x) => x.toJson())),
+        "mensajes": mensajes != null ? List<dynamic>.from(mensajes!.map((x) => x.toJson())) : null,
     };
 }
 

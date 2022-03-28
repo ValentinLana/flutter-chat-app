@@ -39,7 +39,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     socketService = Provider.of<SocketService>(context, listen: false);
     authService = Provider.of<AuthService>(context, listen: false);
 
-    socketService!.socket!.on('mensaje-personal', (data) => _escucharMensaje);
+    socketService!.socket!.on('mensaje-personal', _escucharMensaje);
   
    _cargarHistorial(chatService!.usuarioPara!.id!);
 
@@ -47,16 +47,17 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   void _cargarHistorial( String usuarioID ) async {
 
-    List<Mensaje> chat = await chatService!.getChat(usuarioID);
+    List<Mensaje>? chat = await chatService!.getChat(usuarioID);
 
-    final history = chat.map((m) => ChatMessage(
+    final history = chat?.map((m) => ChatMessage(
       texto: m.mensaje!,
       uid: m.de!,
       animationController: AnimationController(vsync: this, duration: const Duration( milliseconds: 0))..forward(),
     ));
 
     setState(() {
-      _messages.insertAll(0, history);
+
+     history != null ?  _messages.insertAll(0, history) : null;
     });
 
   }
@@ -96,26 +97,25 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           ],
         ),
       ),
-      body: Container(
-          child: Column(
+      body: Column(
         children: [
-          Flexible(
-            child: ListView.builder(
-              itemBuilder: (_, i) => _messages[i],
-              itemCount: _messages.length,
-              physics: const BouncingScrollPhysics(),
-              reverse: true,
-            ),
-          ),
-          const Divider(
-            height: 1,
-          ),
-          Container(
-            color: Colors.white,
-            child: _inputChat(),
-          )
+      Flexible(
+        child: ListView.builder(
+          itemBuilder: (_, i) => _messages[i],
+          itemCount: _messages.length,
+          physics: const BouncingScrollPhysics(),
+          reverse: true,
+        ),
+      ),
+      const Divider(
+        height: 1,
+      ),
+      Container(
+        color: Colors.white,
+        child: _inputChat(),
+      )
         ],
-      )),
+      ),
     );
   }
 
@@ -173,6 +173,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   _handleSumbit(String text) {
+    print('ajdflasdkj');
     if (text.isEmpty) return;
 
     _textController.clear();
