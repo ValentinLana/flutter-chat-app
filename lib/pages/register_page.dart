@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../helpers/mostrar_alerta.dart';
 import '../services/auth_service.dart';
+import '../services/socket_service.dart';
 import '../widgets/labels.dart';
 import '../widgets/logo.dart';
 
@@ -63,6 +64,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     return Container(
       margin: const EdgeInsets.only(top: 40),
@@ -94,6 +96,7 @@ class __FormState extends State<_Form> {
                           emailCtrl.text.trim(),
                           passCtrl.text.trim());
                       if (registroOk == true) {
+                        socketService.connect();
                         Navigator.pushReplacementNamed(context, 'usuarios');
                       } else {
                         mostrarAlerta(
